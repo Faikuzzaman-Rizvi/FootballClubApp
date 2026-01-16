@@ -1,0 +1,112 @@
+<div class="container mt-4">
+  <button routerLink="/clubs" class="btn btn-secondary mb-3">
+    <i class="bi bi-arrow-left"></i> Back to List
+  </button>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border"></div>
+  </div>
+
+  <div *ngIf="club && !loading">
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3>{{club.clubName}}</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3">
+            <img [src]="'https://localhost:7291' + club.clubLogo"
+                 class="img-fluid rounded"
+                 alt="{{club.clubName}}"
+                 onerror="this.src='https://via.placeholder.com/200'">
+          </div>
+          <div class="col-md-9">
+            <table class="table">
+              <tr>
+                <th>Club Code:</th>
+                <td>{{club.clubCode}}</td>
+              </tr>
+              <tr>
+                <th>Stadium:</th>
+                <td>{{club.stadiumName}}</td>
+              </tr>
+              <tr>
+                <th>Founded:</th>
+                <td>{{club.foundedDate | date:'longDate'}}</td>
+              </tr>
+              <tr>
+                <th>Status:</th>
+                <td>
+                  <span class="badge" [ngClass]="club.isActive ? 'bg-success' : 'bg-secondary'">
+                    {{club.isActive ? 'Active' : 'Inactive'}}
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header bg-dark text-white">
+        <h4>Players ({{club.players?.length || 0}})</h4>
+      </div>
+      <div class="card-body">
+        <div *ngIf="!club.players || club.players.length === 0" class="alert alert-info">
+          No players in this club.
+        </div>
+
+        <div *ngFor="let player of club.players" class="card mb-3">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-2">
+                <img [src]="'https://localhost:7291' + player.playerPhoto"
+                     class="img-fluid rounded"
+                     alt="{{player.playerName}}"
+                     onerror="this.src='https://via.placeholder.com/150'">
+              </div>
+              <div class="col-md-10">
+                <h5>
+                  {{player.playerName}}
+                  <span class="badge bg-primary">#{{player.jerseyNumber}}</span>
+                </h5>
+                <p>
+                  <strong>Code:</strong> {{player.playerCode}}<br>
+                  <strong>Nationality:</strong> {{player.nationality}}<br>
+                  <strong>Date of Birth:</strong> {{player.dateOfBirth | date:'longDate'}}
+                </p>
+
+                <div *ngIf="player.playerDetails && player.playerDetails.length > 0">
+                  <h6>Statistics</h6>
+                  <table class="table table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Position</th>
+                        <th>Contract</th>
+                        <th>Salary</th>
+                        <th>Goals</th>
+                        <th>Assists</th>
+                        <th>Matches</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let detail of player.playerDetails">
+                        <td>{{detail.position?.positionName}}</td>
+                        <td>{{detail.contractStart | date:'shortDate'}} - {{detail.contractEnd | date:'shortDate'}}</td>
+                        <td>{{detail.annualSalary | currency}}</td>
+                        <td>{{detail.goalsScored}}</td>
+                        <td>{{detail.assists}}</td>
+                        <td>{{detail.matchesPlayed}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

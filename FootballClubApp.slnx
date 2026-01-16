@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="footballclubapp.client/footballclubapp.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="FootballClubApp.Server/FootballClubApp.Server.csproj" />
+</Solution>
