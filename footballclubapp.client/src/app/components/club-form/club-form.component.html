@@ -1,220 +1,262 @@
-<div class="container mt-4">
-  <h2>{{isEditMode ? 'Edit' : 'Add'}} Club</h2>
+<!-- Page Header -->
+<div class="bg-dark text-white py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">{{isEditMode ? 'Edit Club' : 'Add New Club'}}</h1>
+    <p class="lead mb-0">{{isEditMode ? 'Update club information and squad details' : 'Create a new football club and build your squad'}}</p>
+  </div>
+</div>
 
+<!-- Form Content -->
+<div class="container py-5">
   <form (ngSubmit)="onSubmit()" #clubForm="ngForm">
 
-    <div class="card mb-3">
-      <div class="card-header bg-primary text-white">Club Information</div>
-      <div class="card-body">
+    <!-- Club Information Card -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-danger text-white py-3">
+        <h5 class="mb-0">
+          <i class="bi bi-building me-2"></i>
+          Club Information
+        </h5>
+      </div>
+      <div class="card-body p-4">
+        <div class="row g-3">
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Club Code *</label>
-            <input type="text" class="form-control" [(ngModel)]="clubData.clubCode"
-                   name="clubCode" required>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Club Code *</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">
+                <i class="bi bi-code-square text-danger"></i>
+              </span>
+              <input type="text" class="form-control" [(ngModel)]="clubData.clubCode"
+                     name="clubCode" required placeholder="Enter club code">
+            </div>
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Club Name *</label>
-            <input type="text" class="form-control" [(ngModel)]="clubData.clubName"
-                   name="clubName" required>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Club Name *</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">
+                <i class="bi bi-trophy text-danger"></i>
+              </span>
+              <input type="text" class="form-control" [(ngModel)]="clubData.clubName"
+                     name="clubName" required placeholder="Enter club name">
+            </div>
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Founded Date *</label>
-            <input type="date" class="form-control" [(ngModel)]="clubData.foundedDate"
-                   name="foundedDate" required>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Founded Date *</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">
+                <i class="bi bi-calendar-event text-danger"></i>
+              </span>
+              <input type="date" class="form-control" [(ngModel)]="clubData.foundedDate"
+                     name="foundedDate" required>
+            </div>
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Stadium Name *</label>
-            <input type="text" class="form-control" [(ngModel)]="clubData.stadiumName"
-                   name="stadiumName" required>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Stadium Name *</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">
+                <i class="bi bi-geo-alt-fill text-danger"></i>
+              </span>
+              <input type="text" class="form-control" [(ngModel)]="clubData.stadiumName"
+                     name="stadiumName" required placeholder="Enter stadium name">
+            </div>
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Club Logo {{isEditMode ? '(Optional - keep existing if not selected)' : ''}}</label>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Club Logo {{isEditMode ? '(Optional)' : ''}}</label>
 
-            <!-- Show existing logo info in edit mode -->
-            <div *ngIf="isEditMode && clubData.clubLogo" class="mb-2 p-2 border rounded bg-light">
-              <div class="d-flex align-items-center">
-                <img [src]="'https://localhost:7291' + clubData.clubLogo"
-                     alt="Current Logo"
-                     class="img-thumbnail me-2"
-                     style="max-width: 60px; max-height: 60px;">
-                <div class="flex-grow-1">
-                  <small class="text-muted d-block">Current Logo</small>
-                  <small class="text-primary">{{getFileName(clubData.clubLogo)}}</small>
-                </div>
+            <div *ngIf="isEditMode && clubData.clubLogo" class="alert alert-info d-flex align-items-center mb-2">
+              <img [src]="'https://localhost:7291' + clubData.clubLogo"
+                   alt="Current Logo"
+                   class="rounded me-2"
+                   style="width: 50px; height: 50px; object-fit: cover;">
+              <div>
+                <small class="fw-bold d-block">Current Logo</small>
+                <small class="text-muted">{{getFileName(clubData.clubLogo)}}</small>
               </div>
             </div>
 
             <input type="file" class="form-control" (change)="onClubLogoSelect($event)"
-                   accept="image/*" #clubLogoInput>
+                   accept="image/*">
 
-            <!-- Show selected file name -->
             <small *ngIf="clubLogoFile" class="text-success d-block mt-1">
-              New file selected: {{clubLogoFile.name}}
+              <i class="bi bi-check-circle me-1"></i>
+              New file: {{clubLogoFile.name}}
             </small>
           </div>
 
-          <div class="col-md-6 mb-3">
-            <div class="form-check mt-4">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Club Status</label>
+            <div class="form-check form-switch mt-2">
               <input type="checkbox" class="form-check-input" [(ngModel)]="clubData.isActive"
-                     name="isActive" id="isActive">
-              <label class="form-check-label" for="isActive">Is Active</label>
+                     name="isActive" id="isActive" role="switch" style="width: 3em; height: 1.5em;">
+              <label class="form-check-label ms-2" for="isActive">
+                <span class="badge" [ngClass]="clubData.isActive ? 'bg-success' : 'bg-secondary'">
+                  {{clubData.isActive ? 'Active' : 'Inactive'}}
+                </span>
+              </label>
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
 
-    <div class="card mb-3">
-      <div class="card-header bg-dark text-white">
-        Players
-        <button type="button" class="btn btn-sm btn-success float-end"
-                (click)="addPlayer()">
-          + Add Player
-        </button>
+    <!-- Players Card -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-dark text-white py-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="bi bi-people me-2"></i>
+            Players
+          </h5>
+          <button type="button" class="btn btn-success btn-sm" (click)="addPlayer()">
+            <i class="bi bi-plus-circle me-1"></i> Add Player
+          </button>
+        </div>
       </div>
-      <div class="card-body">
+      <div class="card-body p-4">
 
-        <div *ngIf="clubData.players.length === 0" class="alert alert-info">
-          No players added. Click "Add Player" to add one.
+        <div *ngIf="clubData.players.length === 0" class="alert alert-info text-center">
+          <i class="bi bi-info-circle me-2"></i>
+          No players added yet. Click "Add Player" to begin.
         </div>
 
-        <div *ngFor="let player of clubData.players; let i = index" class="card mb-3">
+        <div *ngFor="let player of clubData.players; let i = index" class="card border mb-3">
           <div class="card-header bg-light">
-            Player {{i + 1}}
-            <button type="button" class="btn btn-sm btn-danger float-end"
-                    (click)="removePlayer(i)">
-              Remove
-            </button>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold">Player {{i + 1}}</span>
+              <button type="button" class="btn btn-danger btn-sm" (click)="removePlayer(i)">
+                <i class="bi bi-trash me-1"></i> Remove
+              </button>
+            </div>
           </div>
           <div class="card-body">
 
-            <div class="row">
-              <div class="col-md-4 mb-2">
-                <label>Player Code *</label>
-                <input type="text" class="form-control" [(ngModel)]="player.playerCode"
-                       [name]="'playerCode'+i" required>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">Player Code *</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="player.playerCode"
+                       [name]="'playerCode'+i" required placeholder="Enter code">
               </div>
 
-              <div class="col-md-4 mb-2">
-                <label>Player Name *</label>
-                <input type="text" class="form-control" [(ngModel)]="player.playerName"
-                       [name]="'playerName'+i" required>
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">Player Name *</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="player.playerName"
+                       [name]="'playerName'+i" required placeholder="Enter name">
               </div>
 
-              <div class="col-md-4 mb-2">
-                <label>Date of Birth *</label>
-                <input type="date" class="form-control" [(ngModel)]="player.dateOfBirth"
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">Date of Birth *</label>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="player.dateOfBirth"
                        [name]="'dateOfBirth'+i" required>
               </div>
 
-              <div class="col-md-4 mb-2">
-                <label>Nationality *</label>
-                <input type="text" class="form-control" [(ngModel)]="player.nationality"
-                       [name]="'nationality'+i" required>
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">Nationality *</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="player.nationality"
+                       [name]="'nationality'+i" required placeholder="Enter nationality">
               </div>
 
-              <div class="col-md-4 mb-2">
-                <label>Jersey Number *</label>
-                <input type="number" class="form-control" [(ngModel)]="player.jerseyNumber"
-                       [name]="'jerseyNumber'+i" required>
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">Jersey Number *</label>
+                <input type="number" class="form-control form-control-sm" [(ngModel)]="player.jerseyNumber"
+                       [name]="'jerseyNumber'+i" required placeholder="Enter number">
               </div>
 
-              <div class="col-md-4 mb-2">
-                <label>Player Photo {{isEditMode ? '(Optional)' : ''}}</label>
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">Player Photo {{isEditMode ? '(Optional)' : ''}}</label>
 
-                <!-- Show existing photo info in edit mode -->
-                <div *ngIf="isEditMode && player.playerPhoto" class="mb-2 p-2 border rounded bg-light">
-                  <div class="d-flex align-items-center">
-                    <img [src]="'https://localhost:7291' + player.playerPhoto"
-                         alt="Current Photo"
-                         class="img-thumbnail me-2"
-                         style="max-width: 50px; max-height: 50px;">
-                    <div class="flex-grow-1">
-                      <small class="text-muted d-block">Current Photo</small>
-                      <small class="text-primary">{{getFileName(player.playerPhoto)}}</small>
-                    </div>
-                  </div>
+                <div *ngIf="isEditMode && player.playerPhoto" class="mb-1">
+                  <img [src]="'https://localhost:7291' + player.playerPhoto"
+                       alt="Current Photo"
+                       class="rounded"
+                       style="width: 40px; height: 40px; object-fit: cover;">
+                  <small class="text-muted ms-2">{{getFileName(player.playerPhoto)}}</small>
                 </div>
 
-                <input type="file" class="form-control" (change)="onPlayerPhotoSelect($event, i)"
+                <input type="file" class="form-control form-control-sm" (change)="onPlayerPhotoSelect($event, i)"
                        accept="image/*">
 
-                <!-- Show selected file name -->
                 <small *ngIf="playerPhotoFiles[i]" class="text-success d-block mt-1">
-                  New file selected: {{playerPhotoFiles[i].name}}
+                  <i class="bi bi-check-circle"></i>
+                  {{playerPhotoFiles[i].name}}
                 </small>
               </div>
             </div>
 
-            <hr>
-            <h6>
-              Player Details
-              <button type="button" class="btn btn-sm btn-info"
-                      (click)="addPlayerDetail(i)">
-                + Add Detail
-              </button>
-            </h6>
+            <!-- Player Details -->
+            <div class="mt-3 p-3 bg-light rounded">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 fw-bold">
+                  <i class="bi bi-graph-up text-danger me-1"></i>
+                  Player Statistics
+                </h6>
+                <button type="button" class="btn btn-info btn-sm" (click)="addPlayerDetail(i)">
+                  <i class="bi bi-plus me-1"></i> Add Detail
+                </button>
+              </div>
 
-            <div *ngFor="let detail of player.playerDetails; let j = index"
-                 class="border p-2 mb-2 bg-light rounded">
+              <div *ngFor="let detail of player.playerDetails; let j = index"
+                   class="card border mb-2">
+                <div class="card-body p-3 position-relative">
 
-              <button type="button" class="btn btn-sm btn-danger float-end"
-                      (click)="removePlayerDetail(i, j)">
-                Remove
-              </button>
+                  <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                          (click)="removePlayerDetail(i, j)">
+                    <i class="bi bi-x"></i>
+                  </button>
 
-              <div class="row">
-                <div class="col-md-3 mb-2">
-                  <label>Position *</label>
-                  <select class="form-control" [(ngModel)]="detail.positionName"
-                          [name]="'position'+i+j" required>
-                    <option value="">Select Position</option>
-                    <option *ngFor="let pos of positions" [value]="pos.positionName">
-                      {{pos.positionName}}
-                    </option>
-                  </select>
-                </div>
+                  <div class="row g-2">
+                    <div class="col-md-3">
+                      <label class="form-label fw-bold small">Position *</label>
+                      <select class="form-select form-select-sm" [(ngModel)]="detail.positionName"
+                              [name]="'position'+i+j" required>
+                        <option value="">Select</option>
+                        <option *ngFor="let pos of positions" [value]="pos.positionName">
+                          {{pos.positionName}}
+                        </option>
+                      </select>
+                    </div>
 
-                <div class="col-md-3 mb-2">
-                  <label>Contract Start *</label>
-                  <input type="date" class="form-control" [(ngModel)]="detail.contractStart"
-                         [name]="'contractStart'+i+j" required>
-                </div>
+                    <div class="col-md-3">
+                      <label class="form-label fw-bold small">Contract Start *</label>
+                      <input type="date" class="form-control form-control-sm" [(ngModel)]="detail.contractStart"
+                             [name]="'contractStart'+i+j" required>
+                    </div>
 
-                <div class="col-md-3 mb-2">
-                  <label>Contract End *</label>
-                  <input type="date" class="form-control" [(ngModel)]="detail.contractEnd"
-                         [name]="'contractEnd'+i+j" required>
-                </div>
+                    <div class="col-md-3">
+                      <label class="form-label fw-bold small">Contract End *</label>
+                      <input type="date" class="form-control form-control-sm" [(ngModel)]="detail.contractEnd"
+                             [name]="'contractEnd'+i+j" required>
+                    </div>
 
-                <div class="col-md-3 mb-2">
-                  <label>Annual Salary *</label>
-                  <input type="number" class="form-control" [(ngModel)]="detail.annualSalary"
-                         [name]="'salary'+i+j" required>
-                </div>
+                    <div class="col-md-3">
+                      <label class="form-label fw-bold small">Annual Salary *</label>
+                      <input type="number" class="form-control form-control-sm" [(ngModel)]="detail.annualSalary"
+                             [name]="'salary'+i+j" required placeholder="0">
+                    </div>
 
-                <div class="col-md-4 mb-2">
-                  <label>Goals Scored</label>
-                  <input type="number" class="form-control" [(ngModel)]="detail.goalsScored"
-                         [name]="'goals'+i+j">
-                </div>
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold small">Goals Scored</label>
+                      <input type="number" class="form-control form-control-sm" [(ngModel)]="detail.goalsScored"
+                             [name]="'goals'+i+j" placeholder="0">
+                    </div>
 
-                <div class="col-md-4 mb-2">
-                  <label>Assists</label>
-                  <input type="number" class="form-control" [(ngModel)]="detail.assists"
-                         [name]="'assists'+i+j">
-                </div>
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold small">Assists</label>
+                      <input type="number" class="form-control form-control-sm" [(ngModel)]="detail.assists"
+                             [name]="'assists'+i+j" placeholder="0">
+                    </div>
 
-                <div class="col-md-4 mb-2">
-                  <label>Matches Played</label>
-                  <input type="number" class="form-control" [(ngModel)]="detail.matchesPlayed"
-                         [name]="'matches'+i+j">
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold small">Matches Played</label>
+                      <input type="number" class="form-control form-control-sm" [(ngModel)]="detail.matchesPlayed"
+                             [name]="'matches'+i+j" placeholder="0">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -224,12 +266,17 @@
       </div>
     </div>
 
-    <button type="submit" class="btn btn-primary btn-lg" [disabled]="!clubForm.valid">
-      {{isEditMode ? 'Update' : 'Save'}} Club
-    </button>
-    <button type="button" class="btn btn-secondary btn-lg ms-2" routerLink="/clubs">
-      Cancel
-    </button>
+    <!-- Form Actions -->
+    <div class="d-flex gap-2 justify-content-center">
+      <button type="submit" class="btn btn-success btn-lg px-5" [disabled]="!clubForm.valid">
+        <i class="bi bi-check-circle me-2"></i>
+        {{isEditMode ? 'Update Club' : 'Save Club'}}
+      </button>
+      <button type="button" class="btn btn-secondary btn-lg px-5" routerLink="/clubs">
+        <i class="bi bi-x-circle me-2"></i>
+        Cancel
+      </button>
+    </div>
 
   </form>
 </div>

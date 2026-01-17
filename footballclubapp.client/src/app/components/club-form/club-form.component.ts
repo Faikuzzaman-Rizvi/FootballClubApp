@@ -20,7 +20,7 @@ export class ClubFormComponent implements OnInit {
     foundedDate: '',
     stadiumName: '',
     isActive: true,
-    clubLogo: '', // Add this to track existing logo
+    clubLogo: '',
     players: [] as any[]
   };
 
@@ -64,14 +64,14 @@ export class ClubFormComponent implements OnInit {
           foundedDate: data.foundedDate.split('T')[0],
           stadiumName: data.stadiumName,
           isActive: data.isActive,
-          clubLogo: data.clubLogo, // Store existing logo path
+          clubLogo: data.clubLogo, 
           players: data.players?.map(p => ({
             playerCode: p.playerCode,
             playerName: p.playerName,
             dateOfBirth: p.dateOfBirth.split('T')[0],
             nationality: p.nationality,
             jerseyNumber: p.jerseyNumber,
-            playerPhoto: p.playerPhoto, // Store existing photo path
+            playerPhoto: p.playerPhoto, 
             playerDetails: p.playerDetails?.map(pd => ({
               positionName: pd.position?.positionName || '',
               contractStart: pd.contractStart.split('T')[0],
@@ -102,7 +102,7 @@ export class ClubFormComponent implements OnInit {
       dateOfBirth: '',
       nationality: '',
       jerseyNumber: 0,
-      playerPhoto: '', // Initialize empty for new players
+      playerPhoto: '', 
       playerDetails: []
     });
   }

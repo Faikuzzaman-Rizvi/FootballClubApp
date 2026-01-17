@@ -42,10 +42,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Static Files Middleware - IMPORTANT for images
 app.UseStaticFiles();
-
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();

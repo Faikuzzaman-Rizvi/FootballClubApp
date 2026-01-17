@@ -36,7 +36,6 @@ namespace FootballClubApp.Server.Controllers
                     }
                     catch (Exception ex)
                     {
-                        // Log error but don't stop the process
                         Console.WriteLine($"Error deleting file {fullPath}: {ex.Message}");
                     }
                 }
@@ -75,7 +74,10 @@ namespace FootballClubApp.Server.Controllers
 
         // POST: api/Clubs
         [HttpPost]
-        public async Task<IActionResult> AddClub([FromForm] string clubData, [FromForm] IFormFile? clubLogo, [FromForm] IFormFileCollection? playerPhotos)
+        public async Task<IActionResult> AddClub([FromForm] string clubData,
+            [FromForm] IFormFile? clubLogo,
+            [FromForm] IFormFileCollection? playerPhotos,
+            [FromForm] string? photoIndices)
         {
             try
             {
@@ -89,6 +91,11 @@ namespace FootballClubApp.Server.Controllers
                     return BadRequest("Invalid club data");
                 }
 
+                List<int> indices = new List<int>();
+                if (!string.IsNullOrEmpty(photoIndices))
+                {
+                    indices = JsonSerializer.Deserialize<List<int>>(photoIndices) ?? new List<int>();
+                }
                 // Create club
                 var club = new Club
                 {
@@ -96,7 +103,7 @@ namespace FootballClubApp.Server.Controllers
                     ClubName = input.ClubName,
                     FoundedDate = input.FoundedDate,
                     StadiumName = input.StadiumName,
-                    IsActive = true,
+                    IsActive = input.IsActive,
                     ClubLogo = "/images/clubs/default.png"
                 };
 
@@ -122,6 +129,7 @@ namespace FootballClubApp.Server.Controllers
                 // Add players
                 if (input.Players != null && input.Players.Any())
                 {
+                    int photoFileIndex = 0;
                     for (int i = 0; i < input.Players.Count; i++)
                     {
                         var playerInput = input.Players[i];
@@ -138,9 +146,9 @@ namespace FootballClubApp.Server.Controllers
                         };
 
                         // Handle player photo upload
-                        if (playerPhotos != null && i < playerPhotos.Count)
+                        if (indices.Contains(i) && playerPhotos != null && photoFileIndex < playerPhotos.Count)
                         {
-                            var playerPhoto = playerPhotos[i];
+                            var playerPhoto = playerPhotos[photoFileIndex];
                             if (playerPhoto != null && playerPhoto.Length > 0)
                             {
                                 var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "players");
@@ -155,6 +163,7 @@ namespace FootballClubApp.Server.Controllers
                                 }
                                 player.PlayerPhoto = "/images/players/" + uniqueFileName;
                             }
+                            photoFileIndex++;
                         }
 
                         _context.Players.Add(player);
@@ -205,7 +214,11 @@ namespace FootballClubApp.Server.Controllers
 
         // PUT: api/Clubs/5
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateClub(int id, [FromForm] string clubData, [FromForm] IFormFile? clubLogo, [FromForm] IFormFileCollection? playerPhotos)
+        public async Task<IActionResult> UpdateClub(int id,
+            [FromForm] string clubData,
+            [FromForm] IFormFile? clubLogo,
+            [FromForm] IFormFileCollection? playerPhotos,
+            [FromForm] string? photoIndices)
         {
             try
             {
@@ -217,6 +230,13 @@ namespace FootballClubApp.Server.Controllers
                 if (input == null)
                 {
                     return BadRequest("Invalid club data");
+                }
+
+                // Parse photo indices
+                List<int> indices = new List<int>();
+                if (!string.IsNullOrEmpty(photoIndices))
+                {
+                    indices = JsonSerializer.Deserialize<List<int>>(photoIndices) ?? new List<int>();
                 }
 
                 var existingClub = await _context.Clubs
@@ -236,10 +256,9 @@ namespace FootballClubApp.Server.Controllers
                 existingClub.StadiumName = input.StadiumName;
                 existingClub.IsActive = input.IsActive;
 
-                // Handle club logo upload - delete old logo if new one is uploaded
+                // Handle club logo upload
                 if (clubLogo != null && clubLogo.Length > 0)
-                {
-                    // Delete old logo
+                {                 
                     DeleteFileIfExists(existingClub.ClubLogo);
 
                     var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "clubs");
@@ -254,21 +273,25 @@ namespace FootballClubApp.Server.Controllers
                     }
                     existingClub.ClubLogo = "/images/clubs/" + uniqueFileName;
                 }
+                
+                var existingPlayerPhotos = existingClub.Players?
+                    .Select((p, index) => new { Index = index, Photo = p.PlayerPhoto })
+                    .ToDictionary(x => x.Index, x => x.Photo) ?? new Dictionary<int, string>();
 
-                // Delete existing players and their photos
+                // Delete existing players and their details
                 if (existingClub.Players != null && existingClub.Players.Any())
                 {
                     foreach (var player in existingClub.Players)
-                    {
-                        DeleteFileIfExists(player.PlayerPhoto);
+                    {                      
                     }
                     _context.Players.RemoveRange(existingClub.Players);
                 }
                 await _context.SaveChangesAsync();
 
-                // Add new players
+                // Add new/updated players
                 if (input.Players != null && input.Players.Any())
                 {
+                    int photoFileIndex = 0;
                     for (int i = 0; i < input.Players.Count; i++)
                     {
                         var playerInput = input.Players[i];
@@ -280,14 +303,21 @@ namespace FootballClubApp.Server.Controllers
                             Nationality = playerInput.Nationality,
                             JerseyNumber = playerInput.JerseyNumber,
                             IsActive = true,
-                            PlayerPhoto = "/images/players/default.jpg",
                             ClubId = existingClub.ClubId
                         };
 
-                        // Handle player photo upload
-                        if (playerPhotos != null && i < playerPhotos.Count)
+                        // Determine player photo
+                        bool hasNewPhoto = indices.Contains(i) && playerPhotos != null && photoFileIndex < playerPhotos.Count;
+
+                        if (hasNewPhoto)
                         {
-                            var playerPhoto = playerPhotos[i];
+                            // New photo uploaded
+                            if (existingPlayerPhotos.ContainsKey(i))
+                            {
+                                DeleteFileIfExists(existingPlayerPhotos[i]);
+                            }
+
+                            var playerPhoto = playerPhotos[photoFileIndex];
                             if (playerPhoto != null && playerPhoto.Length > 0)
                             {
                                 var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "players");
@@ -301,6 +331,22 @@ namespace FootballClubApp.Server.Controllers
                                     await playerPhoto.CopyToAsync(stream);
                                 }
                                 player.PlayerPhoto = "/images/players/" + uniqueFileName;
+                            }
+                            else
+                            {
+                                player.PlayerPhoto = "/images/players/default.jpg";
+                            }
+                            photoFileIndex++;
+                        }
+                        else
+                        {
+                            if (existingPlayerPhotos.ContainsKey(i) && !string.IsNullOrEmpty(existingPlayerPhotos[i]))
+                            {
+                                player.PlayerPhoto = existingPlayerPhotos[i];
+                            }
+                            else
+                            {
+                                player.PlayerPhoto = "/images/players/default.jpg";
                             }
                         }
 
@@ -336,6 +382,15 @@ namespace FootballClubApp.Server.Controllers
                     }
                 }
 
+                foreach (var kvp in existingPlayerPhotos)
+                {
+                    if (kvp.Key >= (input.Players?.Count ?? 0) ||
+                        (indices.Contains(kvp.Key) && playerPhotos != null))
+                    {
+                        DeleteFileIfExists(kvp.Value);
+                    }
+                }
+
                 var result = await _context.Clubs
                     .Include(c => c.Players)
                         .ThenInclude(p => p.PlayerDetails)
@@ -363,11 +418,8 @@ namespace FootballClubApp.Server.Controllers
             {
                 return NotFound();
             }
-
-            // Delete club logo
             DeleteFileIfExists(existingClub.ClubLogo);
 
-            // Delete player photos
             if (existingClub.Players != null && existingClub.Players.Any())
             {
                 foreach (var player in existingClub.Players)

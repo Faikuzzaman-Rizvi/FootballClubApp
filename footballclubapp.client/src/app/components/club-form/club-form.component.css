@@ -1,0 +1,26 @@
+/* Letter Spacing Utility */
+.ls-wider {
+  letter-spacing: 2px;
+}
+
+/* Dashed Border Utility */
+.border-dashed {
+  border-style: dashed !important;
+}
+
+/* Card Slide Animation */
+.card {
+  animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

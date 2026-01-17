@@ -44,4 +44,12 @@ export class ClubDetailComponent implements OnInit {
   getImageUrl(path: string): string {
     return `https://localhost:7291${path}`;
   }
+
+  getTotalGoals(): number {
+    if (!this.club || !this.club.players) return 0;
+    return this.club.players.reduce((total, player) => {
+      if (!player.playerDetails) return total;
+      return total + player.playerDetails.reduce((sum, detail) => sum + (detail.goalsScored || 0), 0);
+    }, 0);
+  }
 }

@@ -100,7 +100,7 @@ namespace FootballClubApp.Server.Data
                     JerseyNumber = 7,
                     IsActive = true,
                     PlayerPhoto = "/images/players/ronaldo.jpg",
-                    ClubId = 1 // Manchester United
+                    ClubId = 1
                 },
                 new Player
                 {
@@ -112,7 +112,7 @@ namespace FootballClubApp.Server.Data
                     JerseyNumber = 10,
                     IsActive = true,
                     PlayerPhoto = "/images/players/messi.jpg",
-                    ClubId = 2 // Barcelona
+                    ClubId = 2 
                 },
                 new Player
                 {
@@ -124,13 +124,12 @@ namespace FootballClubApp.Server.Data
                     JerseyNumber = 11,
                     IsActive = true,
                     PlayerPhoto = "/images/players/neymar.jpg",
-                    ClubId = 2 // Barcelona
+                    ClubId = 2 
                 }
             );
 
             // Seed data - PlayerDetails
-            modelBuilder.Entity<PlayerDetail>().HasData(
-                // Ronaldo - Striker
+            modelBuilder.Entity<PlayerDetail>().HasData(         
                 new PlayerDetail
                 {
                     PlayerDetailId = 1,
@@ -143,7 +142,7 @@ namespace FootballClubApp.Server.Data
                     Assists = 45,
                     MatchesPlayed = 200
                 },
-                // Messi - Attacking Midfielder
+
                 new PlayerDetail
                 {
                     PlayerDetailId = 2,
@@ -156,7 +155,7 @@ namespace FootballClubApp.Server.Data
                     Assists = 305,
                     MatchesPlayed = 778
                 },
-                // Neymar - Winger
+
                 new PlayerDetail
                 {
                     PlayerDetailId = 3,
